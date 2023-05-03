@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-atomic-qa-note",
+	"name": "Atomic-QA-Note",
+	"version": "1.0.0",
+	"minAppVersion": "1.0.0",
+	"description": "Atomic-QA-Note is an AI-assisted Obsidian plugin that uses the question-answer (QA) card as the smallest thinking/note unit. It help users to quickly create atomic notes based on heuristic QA(https://github.com/Ai-Data-Man/Atomic-QA-Note)",
+	"author": "Ai-Data-Man",
+	"authorUrl": "https://github.com/Ai-Data-Man/Atomic-QA-Note",
+	"isDesktopOnly": false
+}

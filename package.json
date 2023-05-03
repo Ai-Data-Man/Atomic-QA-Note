@@ -1,0 +1,29 @@
+{
+	"name": "atomic-qa-note",
+	"version": "1.0.0",
+	"description": "Atomic-QA-Note is an AI-assisted Obsidian plugin that uses the question-answer (QA) card as the smallest thinking/note unit. It help users to quickly create atomic notes based on heuristic QA(https://github.com/Ai-Data-Man/Atomic-QA-Note)",
+	"main": "main.js",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [],
+	"author": "Ai-Data-Man",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"vue": "^3.2.31"
+	},
+	"devDependencies": {
+		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
+		"@types/node": "^16.11.6",
+		"@typescript-eslint/eslint-plugin": "^5.2.0",
+		"@typescript-eslint/parser": "^5.2.0",
+		"builtin-modules": "^3.2.0",
+		"esbuild": "^0.14.49",
+		"hash-sum": "^2.0.0",
+		"obsidian": "latest",
+		"tslib": "2.3.1",
+		"typescript": "4.4.4"
+	}
+}
