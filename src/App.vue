@@ -1,22 +1,10 @@
 <template>
-    <h2>Hello,Developer!</h2>
-    <Hello></Hello>
-    <Hi :hi="hi"></Hi>
-    <HiHi></HiHi>
+  <QaTree></QaTree>
 </template>
 
-<script setup lang="tsx">
-import Hello from "./Hello";
-import Hi from "./Hi.vue";
-import { ref } from "vue";
-let hi = ref("");
-let HiHi = () => (<h1><Hello></Hello></h1>)
-
+<script setup lang="js">
+  import QaTree from './QaTree.vue'
+  export default {
+    components: { QaTree },
+  }
 </script>
-
-
-<style scoped>
-h2 {
-    color: lightcoral;
-}
-</style>

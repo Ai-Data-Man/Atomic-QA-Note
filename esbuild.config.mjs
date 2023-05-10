@@ -50,6 +50,8 @@ await esbuild.build({
     watch: !prod,
     target: 'es2016',
     logLevel: "info",
+    // 如果是生产环境，设置sourceMap为false，否则开启sourceMap的inline模式，以便在其他环境下调试typescript源码，
+    // 不过因为这是一个插件，运行在obsidian中，而不是自己的node中，所以没法被vscode调试，这里的配置就没什么用了
     sourcemap: prod ? false : 'inline',
     minify: prod ? true : false,
     treeShaking: true,

@@ -12,7 +12,9 @@
 	"author": "Ai-Data-Man",
 	"license": "GPL-3.0",
 	"dependencies": {
-		"vue": "^3.2.31"
+		"@ssthouse/vue3-tree-chart": "^0.2.6",
+		"less-loader": "^11.1.0",
+		"vue": "^3.2.47"
 	},
 	"devDependencies": {
 		"@the_tree/esbuild-plugin-vue3": "^0.3.1",
