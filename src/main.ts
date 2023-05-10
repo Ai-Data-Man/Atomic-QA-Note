@@ -30,7 +30,7 @@ const DEFAULT_SETTINGS: AtomicQaNotePluginSettings = {
 export default class AtomicQaNotePlugin extends Plugin {
     settings: AtomicQaNotePluginSettings;
 
-    // 以下函数将会在插件启动时被obsidian触发。该函数是重写自obsidian的Plugin类(是个抽象类)的同签名可选函数。
+    // 以下函数将会在启用插件时被obsidian触发。该函数是重写自obsidian的Plugin类(是个抽象类)的同签名可选函数。
     async onload() {
         //console.log("qa plugin load");
         // 等待配置加载完毕
@@ -62,8 +62,12 @@ export default class AtomicQaNotePlugin extends Plugin {
 
     }
 
+    // onunload()是obsidian的Plugin类的一个可选函数，它将会在禁用插件时被Obsidian触发。
     onunload() {
-        this.app.workspace.detachLeavesOfType(VIEW_TYPE)
+        //以下语句会取消我们开发的obsidian视图的注册。
+        //this.app.workspace.detachLeavesOfType(VIEW_TYPE)
+        console.log(`Atomic-QA-Note: version ${this.manifest.version} unloaded.`);
+        
     }
 
     // 以下函数不是重写自obsidian的Plugin类，是在我们自己插件类定义的。

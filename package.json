@@ -14,7 +14,8 @@
 	"dependencies": {
 		"@ssthouse/vue3-tree-chart": "^0.2.6",
 		"less-loader": "^11.1.0",
-		"vue": "^3.2.47"
+		"vue": "^3.2.47",
+		"vuetify": "^3.2.3"
 	},
 	"devDependencies": {
 		"@the_tree/esbuild-plugin-vue3": "^0.3.1",

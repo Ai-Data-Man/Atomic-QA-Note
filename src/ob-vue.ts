@@ -8,6 +8,16 @@ import {
 } from 'vue';
 // 如果是在js中，则以下import可以简写为import App from './App'，这个简写是ES6 import支持的一个特性;
 import App from './App.vue';
+// 导入vuetify相关资源。vuetify是一个vue的ui框架，它提供了一套vue的组件库，可以帮助我们快速构建ui界面。
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+const vuetify = createVuetify({
+    components,
+    directives,
+  })
 
 //export const VIEW_TYPE = 'my-view';
 
@@ -55,6 +65,7 @@ export function getMarkDownCodeBlockProcessor() {
         // 它是一个观察者，可以监测数据或视图，当其中监听的一方变动时，同步更新另外一方。
         const vueapp = createApp(App);
         //console.log(`qa_note vueapp created, ${vueapp}`);
+        vueapp.use(vuetify)
          // 把vue实例挂载到el上
         vueapp.mount(el);
     };
