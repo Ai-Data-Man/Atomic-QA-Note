@@ -65,7 +65,9 @@ export function getMarkDownCodeBlockProcessor() {
         // 它是一个观察者，可以监测数据或视图，当其中监听的一方变动时，同步更新另外一方。
         const vueapp = createApp(App);
         //console.log(`qa_note vueapp created, ${vueapp}`);
-        vueapp.use(vuetify)
+        // 使用vuetify
+        vueapp.use(vuetify);
+        // 使用RelationGraph 
          // 把vue实例挂载到el上
         vueapp.mount(el);
     };

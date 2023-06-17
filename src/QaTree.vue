@@ -1,153 +1,99 @@
 <!--template是vue视图侧的标签，在这里定义视图模版-->
 <template>
-  <div class="container">
-    <!-- 以下定义缩放功能按钮。flex是弹性布局的意思 -->
-    <div style="display: flex;">
-      <!-- v-btn是vue index.json中定义过的一个ui组件，但其实是由vuetify为我们提供其实现的。在没安装vuetify之前，只能显示为普通文本-->
-      <v-btn @click="controlScale('bigger')">+</v-btn>
-      <v-btn @click="controlScale('smaller')">-</v-btn>
-      <v-btn @click="controlScale('restore')">1:1</v-btn>
+  <div>
+    <div style="height:50px;padding-top:6px;padding-left: 30px;padding-right:30px;border-bottom: #efefef solid 1px;">
+      <el-radio-group v-model="currentCase" size="small" @change="$router.push('/demo/layout-tree2')">
+        <el-radio-button label="横向树状图谱"></el-radio-button>
+        <el-radio-button label="纵向树状图谱" ></el-radio-button>
+      </el-radio-group>
+      <el-button type="success" class="c-show-code-button"><el-link href="https://github.com/seeksdream/relation-graph/blob/master/examples/views/seeks-graph-docs/demo/Demo4LayoutTree.vue" target="_blank" style="color: #ffffff;">查看代码</el-link></el-button>
     </div>
-    <!-- 这里使用vue组件的标签，完成组件嵌套。 :dataset这样的属性，就是vue组件的形式入参props。可以看出，这里vue组件的形式入参props的值是父实例传入的 -->
-    <vue-tree style="width: 1000px; height: 600px; border: 1px solid gray;" 
-      :dataset="richMediaData" 
-      :config="treeConfig" 
-      ref="scaleTree">
-      <!-- slot插槽是做什么的？插槽可以理解为组件的非属性入参，比如组件B定义了一个slot名为b <template><slot name="实际参数"></template>，那么上层组件A在引入B时，
-        可以通过<B>形式入参<B>，向组件B传递值。slot插槽和属性props的最大差别就是这个形式入参原封不动的挪到子组件B的模版视图中接着B再渲染
-        -->
-      <!--以下使用vslot在向子组件vue-tree的node插槽传递以下模版元素。其中node，collapsed是node插槽所定义的属性参数。可以在vue-tree组件中看到该插槽的定义：
-        <slot name="node" v-bind:node="node.data" v-bind:collapsed="node.data._collapsed">
-        在vslot中声明一下，表示接下来的传参要引用子组件slot插槽的这两个属性参数
-        -->
-      <template v-slot:node="{ node, collapsed }">
-        <qa-card :node="node" :collapsed="collapsed"></qa-card>
-      </template>
-    </vue-tree>
+    <div style="height:calc(100vh - 100px);">
+      <relationgraph
+        ref="seeksRelationGraph"
+        :options="graphOptions"
+        :on-node-click="onNodeClick"
+        :on-line-click="onLineClick"
+      />
+    </div>
   </div>
 </template>
-  
-  <!--在script这里定义逻辑(数据、事件)。lang="js"指定脚本的语言为javascript，lang还支持typescript等-->
-<script setup lang="js">
-// 如果我们自己封装一个js库的话，可以在js库中新建index.js，并export关键字导出相关符号，这样其他地方使用js库时就可以import我们定义的符号。
-import VueTree from "@ssthouse/vue3-tree-chart";
-import "@ssthouse/vue3-tree-chart/dist/vue3-tree-chart.css";
-import QaCard from "./QaCard.vue";
 
+<script setup lang="js">
+// 如果您没有在main.js文件中使用Vue.use(RelationGraph); 就需要使用下面这一行代码来引入relation-graph
+import RelationGraph from './relation-graph-vue3';
 // .vue中export关键字就可以定义并且导出vue组件，此时vue组件的名字就是.vue文件的名字。本质上
 // 一个vue组件其实就是一个可以复用的vue实例，所以它也有data、methods、computed、components等属性，可以在其他vue实例或组件中嵌套来达成复用，
 // 嵌套步骤：第一在一个vue实例中import组件，然后指定为其他vue实例的components属性；第二，在该vue实例的<template>标签中引入组件名标签(通过第一步，相当于引入了一个组件名的自定义标签);
 // 如果不是在.vue文件中定义组件，而是在js文件中定义组件，那么就需要使用Vue.component('组件名', 组件定义)来定义组件，然后在其他vue实例中使用组件名标签来引入组件。
-export default {
+export default { 
   // 组件的名字就是组件名标签的名字，比如这里的组件名字是qa-tree，那么在其他vue实例中使用该组件时，就需要使用<qa-tree></qa-tree>标签
-  name: "qa-tree",
+  name: 'qa-tree',
   // 也可以在components引入组件的时候声明组件名字
-  components: {'vue-tree': VueTree, QaCard },
+  components: { 'relationgraph': RelationGraph },
   data() {
     return {
-      richMediaData: {
-        name: 'James',
-        value: 800,
-        avatar:
-          'https://gravatar.com/avatar/db51fdaf64d942180b5200ca37d155a4?s=400&d=robohash&r=x',
-        children: [
+      currentCase: '横向树状图谱',
+      isShowCodePanel: false,
+      graphOptions: {
+        'backgrounImage': 'https://camo.githubusercontent.com/ede1654f055903cdc39044129d15d5b158f4f3b33ba5b7c21c7407792a506dea/687474703a2f2f72656c6174696f6e2d67726170682e636f6d2f776562736974652f6c6f676f',
+        'backgrounImageNoRepeat': true,
+        'layouts': [
           {
-            name: 'Bob',
-            value: 400,
-            avatar:
-              'https://gravatar.com/avatar/16b3b886b837257757c5961513396a06?s=400&d=robohash&r=x',
-            children: [
-              {
-                name: 'C1',
-                value: 100,
-                avatar:
-                  'https://gravatar.com/avatar/4ee8775f23f12755db978cccdc1356d9?s=400&d=robohash&r=x'
-              },
-              {
-                name: 'C2',
-                value: 300,
-                avatar:
-                  'https://gravatar.com/avatar/d3efa8fa639bdada96a7d0b4372e0a96?s=400&d=robohash&r=x'
-              },
-              {
-                name: 'C3',
-                value: 200,
-                avatar:
-                  'https://gravatar.com/avatar/4905bc3e5dc51a61e3b490ccf1891107?s=400&d=robohash&r=x'
-              }
-            ]
-          },
-          {
-            name: 'Smith',
-            value: 200,
-            avatar:
-              'https://gravatar.com/avatar/d05d081dbbb513180025300b715d5656?s=400&d=robohash&r=x',
-            children: [
-              {
-                name: 'S1',
-                value: 230,
-                avatar:
-                  'https://gravatar.com/avatar/60c1e69e690d943c5dc06568148debc4?s=400&d=robohash&r=x'
-              }
-            ]
-          },
-          {
-            name: 'Jackson',
-            value: 300,
-            avatar:
-              'https://gravatar.com/avatar/581f7a711c815d9671c35ebd815ec1e4?s=400&d=robohash&r=x'
+            'label': '中心',
+            'layoutName': 'tree',
+            'layoutClassName': 'seeks-layout-center',
+            'defaultJunctionPoint': 'border',
+            'defaultNodeShape': 0,
+            'defaultLineShape': 1,
+            'min_per_width': 40,
+            'max_per_width': 70,
+            'min_per_height': 200
           }
-        ]
-      },
-      treeConfig: { nodeWidth: 120, nodeHeight: 80, levelHeight: 200 }
-    }
-  },
-  methods: { // 事件处理函数
-    // 缩放功能处理函数
-    controlScale(command) {
-      switch (command) {
-        case 'bigger':
-          this.$refs.scaleTree.zoomIn()
-          break
-        case 'smaller':
-          this.$refs.scaleTree.zoomOut()
-          break
-        case 'restore':
-          this.$refs.scaleTree.restoreScale()
-          break
+        ],
+        'defaultLineMarker': {
+          'markerWidth': 12,
+          'markerHeight': 12,
+          'refX': 6,
+          'refY': 6,
+          'data': 'M2,2 L10,6 L2,10 L6,6 L2,2'
+        },
+        'defaultNodeShape': 1,
+        'defaultNodeWidth': '30',
+        'defaultLineShape': 2,
+        'defaultJunctionPoint': 'tb',
+        'defaultNodeBorderWidth': 0,
+        'defaultLineColor': 'rgba(0, 186, 189, 1)',
+        'defaultNodeColor': 'rgba(0, 206, 209, 1)',
+        'defaultNodeHeight': '100'
       }
+    };
+  },
+  mounted() {
+    this.showSeeksGraph();
+  },
+  methods: {
+    showSeeksGraph() {
+      const __graph_json_data = { 'rootId': 'a', 'nodes': [
+        { 'id': 'a', 'text': 'a' }, { 'id': 'b', 'text': 'b' }, { 'id': 'b1', 'text': 'b1' }, { 'id': 'b1-1', 'text': 'b1-1' }, { 'id': 'b1-2', 'text': 'b1-2' }, { 'id': 'b1-3', 'text': 'b1-3' }, { 'id': 'b1-4', 'text': 'b1-4' }, { 'id': 'b1-5', 'text': 'b1-5' }, { 'id': 'b1-6', 'text': 'b1-6' }, { 'id': 'b2', 'text': 'b2' }, { 'id': 'b2-1', 'text': 'b2-1' }, { 'id': 'b2-2', 'text': 'b2-2' }, { 'id': 'b2-3', 'text': 'b2-3' }, { 'id': 'b2-4', 'text': 'b2-4' }, { 'id': 'b3', 'text': 'b3' }, { 'id': 'b3-1', 'text': 'b3-1' }, { 'id': 'b3-2', 'text': 'b3-2' }, { 'id': 'b3-3', 'text': 'b3-3' }, { 'id': 'b3-4', 'text': 'b3-4' }, { 'id': 'b3-5', 'text': 'b3-5' }, { 'id': 'b3-6', 'text': 'b3-6' }, { 'id': 'b3-7', 'text': 'b3-7' }, { 'id': 'b4', 'text': 'b4' }, { 'id': 'b4-1', 'text': 'b4-1' }, { 'id': 'b4-2', 'text': 'b4-2' }, { 'id': 'b4-3', 'text': 'b4-3' }, { 'id': 'b4-4', 'text': 'b4-4' }, { 'id': 'b4-5', 'text': 'b4-5' }, { 'id': 'b4-6', 'text': 'b4-6' }, { 'id': 'b4-7', 'text': 'b4-7' }, { 'id': 'b4-8', 'text': 'b4-8' }, { 'id': 'b4-9', 'text': 'b4-9' }, { 'id': 'b5', 'text': 'b5' }, { 'id': 'b5-1', 'text': 'b5-1' }, { 'id': 'b5-2', 'text': 'b5-2' }, { 'id': 'b5-3', 'text': 'b5-3' }, { 'id': 'b5-4', 'text': 'b5-4' }, { 'id': 'b6', 'text': 'b6' }, { 'id': 'b6-1', 'text': 'b6-1' }, { 'id': 'b6-2', 'text': 'b6-2' }, { 'id': 'b6-3', 'text': 'b6-3' }, { 'id': 'b6-4', 'text': 'b6-4' }, { 'id': 'b6-5', 'text': 'b6-5' }, { 'id': 'c', 'text': 'c' }, { 'id': 'c1', 'text': 'c1' }, { 'id': 'c1-1', 'text': 'c1-1' }, { 'id': 'c1-2', 'text': 'c1-2' }, { 'id': 'c1-3', 'text': 'c1-3' }, { 'id': 'c1-4', 'text': 'c1-4' }, { 'id': 'c1-5', 'text': 'c1-5' }, { 'id': 'c1-6', 'text': 'c1-6' }, { 'id': 'c1-7', 'text': 'c1-7' }, { 'id': 'c2', 'text': 'c2' }, { 'id': 'c2-1', 'text': 'c2-1' }, { 'id': 'c2-2', 'text': 'c2-2' }, { 'id': 'c3', 'text': 'c3' }, { 'id': 'c3-1', 'text': 'c3-1' }, { 'id': 'c3-2', 'text': 'c3-2' }, { 'id': 'c3-3', 'text': 'c3-3' }, { 'id': 'd', 'text': 'd' }, { 'id': 'd1', 'text': 'd1' }, { 'id': 'd1-1', 'text': 'd1-1' }, { 'id': 'd1-2', 'text': 'd1-2' }, { 'id': 'd1-3', 'text': 'd1-3' }, { 'id': 'd1-4', 'text': 'd1-4' }, { 'id': 'd1-5', 'text': 'd1-5' }, { 'id': 'd1-6', 'text': 'd1-6' }, { 'id': 'd1-7', 'text': 'd1-7' }, { 'id': 'd1-8', 'text': 'd1-8' }, { 'id': 'd2', 'text': 'd2' }, { 'id': 'd2-1', 'text': 'd2-1' }, { 'id': 'd2-2', 'text': 'd2-2' }, { 'id': 'd3', 'text': 'd3' }, { 'id': 'd3-1', 'text': 'd3-1' }, { 'id': 'd3-2', 'text': 'd3-2' }, { 'id': 'd3-3', 'text': 'd3-3' }, { 'id': 'd3-4', 'text': 'd3-4' }, { 'id': 'd3-5', 'text': 'd3-5' }, { 'id': 'd4', 'text': 'd4' }, { 'id': 'd4-1', 'text': 'd4-1' }, { 'id': 'd4-2', 'text': 'd4-2' }, { 'id': 'd4-3', 'text': 'd4-3' }, { 'id': 'd4-4', 'text': 'd4-4' }, { 'id': 'd4-5', 'text': 'd4-5' }, { 'id': 'd4-6', 'text': 'd4-6' }, { 'id': 'e', 'text': 'e' }, { 'id': 'e1', 'text': 'e1' }, { 'id': 'e1-1', 'text': 'e1-1' }, { 'id': 'e1-2', 'text': 'e1-2' }, { 'id': 'e1-3', 'text': 'e1-3' }, { 'id': 'e1-4', 'text': 'e1-4' }, { 'id': 'e1-5', 'text': 'e1-5' }, { 'id': 'e1-6', 'text': 'e1-6' }, { 'id': 'e2', 'text': 'e2' }, { 'id': 'e2-1', 'text': 'e2-1' }, { 'id': 'e2-2', 'text': 'e2-2' }, { 'id': 'e2-3', 'text': 'e2-3' }, { 'id': 'e2-4', 'text': 'e2-4' }, { 'id': 'e2-5', 'text': 'e2-5' }, { 'id': 'e2-6', 'text': 'e2-6' }, { 'id': 'e2-7', 'text': 'e2-7' }, { 'id': 'e2-8', 'text': 'e2-8' }, { 'id': 'e2-9', 'text': 'e2-9' }], 'lines': [{ 'from': 'a', 'to': 'b' }, { 'from': 'b', 'to': 'b1' }, { 'from': 'b1', 'to': 'b1-1' }, { 'from': 'b1', 'to': 'b1-2' }, { 'from': 'b1', 'to': 'b1-3' }, { 'from': 'b1', 'to': 'b1-4' }, { 'from': 'b1', 'to': 'b1-5' }, { 'from': 'b1', 'to': 'b1-6' }, { 'from': 'b', 'to': 'b2' }, { 'from': 'b2', 'to': 'b2-1' }, { 'from': 'b2', 'to': 'b2-2' }, { 'from': 'b2', 'to': 'b2-3' }, { 'from': 'b2', 'to': 'b2-4' }, { 'from': 'b', 'to': 'b3' }, { 'from': 'b3', 'to': 'b3-1' }, { 'from': 'b3', 'to': 'b3-2' }, { 'from': 'b3', 'to': 'b3-3' }, { 'from': 'b3', 'to': 'b3-4' }, { 'from': 'b3', 'to': 'b3-5' }, { 'from': 'b3', 'to': 'b3-6' }, { 'from': 'b3', 'to': 'b3-7' }, { 'from': 'b', 'to': 'b4' }, { 'from': 'b4', 'to': 'b4-1' }, { 'from': 'b4', 'to': 'b4-2' }, { 'from': 'b4', 'to': 'b4-3' }, { 'from': 'b4', 'to': 'b4-4' }, { 'from': 'b4', 'to': 'b4-5' }, { 'from': 'b4', 'to': 'b4-6' }, { 'from': 'b4', 'to': 'b4-7' }, { 'from': 'b4', 'to': 'b4-8' }, { 'from': 'b4', 'to': 'b4-9' }, { 'from': 'b', 'to': 'b5' }, { 'from': 'b5', 'to': 'b5-1' }, { 'from': 'b5', 'to': 'b5-2' }, { 'from': 'b5', 'to': 'b5-3' }, { 'from': 'b5', 'to': 'b5-4' }, { 'from': 'b', 'to': 'b6' }, { 'from': 'b6', 'to': 'b6-1' }, { 'from': 'b6', 'to': 'b6-2' }, { 'from': 'b6', 'to': 'b6-3' }, { 'from': 'b6', 'to': 'b6-4' }, { 'from': 'b6', 'to': 'b6-5' }, { 'from': 'a', 'to': 'c' }, { 'from': 'c', 'to': 'c1' }, { 'from': 'c1', 'to': 'c1-1' }, { 'from': 'c1', 'to': 'c1-2' }, { 'from': 'c1', 'to': 'c1-3' }, { 'from': 'c1', 'to': 'c1-4' }, { 'from': 'c1', 'to': 'c1-5' }, { 'from': 'c1', 'to': 'c1-6' }, { 'from': 'c1', 'to': 'c1-7' }, { 'from': 'c', 'to': 'c2' }, { 'from': 'c2', 'to': 'c2-1' }, { 'from': 'c2', 'to': 'c2-2' }, { 'from': 'c', 'to': 'c3' }, { 'from': 'c3', 'to': 'c3-1' }, { 'from': 'c3', 'to': 'c3-2' }, { 'from': 'c3', 'to': 'c3-3' }, { 'from': 'a', 'to': 'd' }, { 'from': 'd', 'to': 'd1' }, { 'from': 'd1', 'to': 'd1-1' }, { 'from': 'd1', 'to': 'd1-2' }, { 'from': 'd1', 'to': 'd1-3' }, { 'from': 'd1', 'to': 'd1-4' }, { 'from': 'd1', 'to': 'd1-5' }, { 'from': 'd1', 'to': 'd1-6' }, { 'from': 'd1', 'to': 'd1-7' }, { 'from': 'd1', 'to': 'd1-8' }, { 'from': 'd', 'to': 'd2' }, { 'from': 'd2', 'to': 'd2-1' }, { 'from': 'd2', 'to': 'd2-2' }, { 'from': 'd', 'to': 'd3' }, { 'from': 'd3', 'to': 'd3-1' }, { 'from': 'd3', 'to': 'd3-2' }, { 'from': 'd3', 'to': 'd3-3' }, { 'from': 'd3', 'to': 'd3-4' }, { 'from': 'd3', 'to': 'd3-5' }, { 'from': 'd', 'to': 'd4' }, { 'from': 'd4', 'to': 'd4-1' }, { 'from': 'd4', 'to': 'd4-2' }, { 'from': 'd4', 'to': 'd4-3' }, { 'from': 'd4', 'to': 'd4-4' }, { 'from': 'd4', 'to': 'd4-5' }, { 'from': 'd4', 'to': 'd4-6' }, { 'from': 'a', 'to': 'e' }, { 'from': 'e', 'to': 'e1' }, { 'from': 'e1', 'to': 'e1-1' }, { 'from': 'e1', 'to': 'e1-2' }, { 'from': 'e1', 'to': 'e1-3' }, { 'from': 'e1', 'to': 'e1-4' }, { 'from': 'e1', 'to': 'e1-5' }, { 'from': 'e1', 'to': 'e1-6' }, { 'from': 'e', 'to': 'e2' }, { 'from': 'e2', 'to': 'e2-1' }, { 'from': 'e2', 'to': 'e2-2' }, { 'from': 'e2', 'to': 'e2-3' }, { 'from': 'e2', 'to': 'e2-4' }, { 'from': 'e2', 'to': 'e2-5' }, { 'from': 'e2', 'to': 'e2-6' }, { 'from': 'e2', 'to': 'e2-7' }, { 'from': 'e2', 'to': 'e2-8' }, { 'from': 'e2', 'to': 'e2-9' }] };
+      this.$refs.seeksRelationGraph.setJsonData(__graph_json_data, (graphInstance) => {
+        // 这些写上当图谱初始化完成后需要执行的代码
+      });
+    },
+    onNodeClick(nodeObject, $event) {
+      console.log('onNodeClick:', nodeObject);
+    },
+    onLineClick(lineObject, linkObject, $event) {
+      console.log('onLineClick:', lineObject);
     }
   }
 };
-
-  // let sampleData =  {
-  //   value: "1",
-  //   children: [
-  //     { value: "2", children: [{ value: "4" }, { value: "5" }] },
-  //     { value: "3" },
-  //   ],
-  // };
-  // let treeConfig = { nodeWidth: 120, nodeHeight: 80, levelHeight: 200 };
 </script>
-  
-  
-<style scoped lang="less">
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
-.rich-media-node {
-  width: 80px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  color: white;
-  background-color: #f7c616;
-  border-radius: 4px;
-}
+<style lang="scss">
+
 </style>
-  
+
+<style lang="scss" scoped>
+
+</style>

@@ -12,8 +12,10 @@
 	"author": "Ai-Data-Man",
 	"license": "GPL-3.0",
 	"dependencies": {
-		"@ssthouse/vue3-tree-chart": "^0.2.6",
+		"@vitejs/plugin-vue": "^4.2.3",
+		"html2canvas": "^1.4.1",
 		"less-loader": "^11.1.0",
+		"screenfull": "^6.0.2",
 		"vue": "^3.2.47",
 		"vuetify": "^3.2.3"
 	},
